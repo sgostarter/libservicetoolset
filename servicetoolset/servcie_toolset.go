@@ -59,7 +59,7 @@ func (st *ServerToolset) CreateHTTPServer(cfg *HTTPServerConfig) error {
 		return commerr.ErrInvalidArgument
 	}
 
-	st.httpServer = NewHTTPServer(cfg.Address, st.logger, cfg.Handler)
+	st.httpServer = NewHTTPServer(cfg.Name, cfg.Address, cfg.Handler, &cfg.DiscoveryExConfig, st.logger)
 
 	return nil
 }

@@ -3,9 +3,14 @@ package servicetoolset
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
+	"strconv"
+	"strings"
 
 	"github.com/sgostarter/libeasygo/commerr"
+	"github.com/sgostarter/libeasygo/cuserror"
+	"github.com/sgostarter/libeasygo/iputils"
 )
 
 type GRPCTlsConfig struct {
@@ -116,6 +121,78 @@ func GenClientTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
 		ServerName:   cfg.ServerName,
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      caPool,
+	}
+
+	return
+}
+
+func GetDiscoveryHostAndPort(externalAddress, listeningAddress string) (host string, port int, err error) {
+	fnParse := func(address string) (host string, port int, err error) {
+		if address == "" {
+			err = commerr.ErrInvalidArgument
+
+			return
+		}
+
+		vs := strings.Split(address, ":")
+		if len(vs) > 2 {
+			err = commerr.ErrInvalidArgument
+
+			return
+		}
+
+		if len(vs) == 2 {
+			host = vs[0]
+
+			var port64 int64
+
+			port64, err = strconv.ParseInt(vs[1], 10, 64)
+			if err != nil {
+				return
+			}
+
+			port = int(port64)
+		} else {
+			host = address
+		}
+
+		return
+	}
+
+	host, port, err = fnParse(externalAddress)
+	if err != nil {
+		host = ""
+		port = 0
+	}
+
+	if host != "" && port > 0 {
+		return
+	}
+
+	host2, port2, err := fnParse(listeningAddress)
+	if err != nil {
+		return
+	}
+
+	if host == "" {
+		host = host2
+	}
+
+	if port <= 0 {
+		port = port2
+	}
+
+	if host == "" {
+		ips, errI := iputils.LocalIPv4s()
+		if errI == nil && len(ips) > 0 {
+			host = ips[0]
+		}
+	}
+
+	if host == "" || port < 0 {
+		err = cuserror.NewWithErrorMsg(fmt.Sprintf("invalid host port: %v,%v", host, port))
+
+		return
 	}
 
 	return

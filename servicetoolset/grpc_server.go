@@ -2,19 +2,14 @@ package servicetoolset
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"net/http"
-	"strconv"
-	"strings"
 	"sync"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/sgostarter/i/l"
 	"github.com/sgostarter/libeasygo/commerr"
-	"github.com/sgostarter/libeasygo/cuserror"
-	"github.com/sgostarter/libeasygo/iputils"
 	"github.com/sgostarter/libeasygo/routineman"
 	"github.com/sgostarter/librediscovery/discovery"
 	"github.com/sgostarter/libservicetoolset/grpce/interceptors"
@@ -301,7 +296,7 @@ func (impl *gRPCServerImpl) startDiscovery(server *grpc.Server) error {
 		return nil
 	}
 
-	host, port, err := impl.getDiscoveryHostAndPort(impl.address)
+	host, port, err := GetDiscoveryHostAndPort(impl.externalAddress, impl.address)
 	if err != nil {
 		return err
 	}
@@ -332,7 +327,7 @@ func (impl *gRPCServerImpl) startDiscovery(server *grpc.Server) error {
 	}
 
 	if impl.webAddress != "" {
-		host, port, err := impl.getDiscoveryHostAndPort(impl.webAddress)
+		host, port, err := GetDiscoveryHostAndPort(impl.externalAddress, impl.webAddress)
 		if err != nil {
 			impl.logger.Errorf("discovery gRpcWeb on address %v failed: %v", impl.webAddress, err)
 		} else {
@@ -346,78 +341,4 @@ func (impl *gRPCServerImpl) startDiscovery(server *grpc.Server) error {
 	}
 
 	return impl.setter.Start(serviceInfos)
-}
-
-func (impl *gRPCServerImpl) getDiscoveryHostAndPort(address string) (host string, port int, err error) {
-	fnParse := func(address string) (host string, port int, err error) {
-		if address == "" {
-			err = commerr.ErrInvalidArgument
-
-			return
-		}
-
-		vs := strings.Split(address, ":")
-		if len(vs) > 2 {
-			err = commerr.ErrInvalidArgument
-
-			return
-		}
-
-		if len(vs) == 2 {
-			host = vs[0]
-
-			var port64 int64
-
-			port64, err = strconv.ParseInt(vs[1], 10, 64)
-			if err != nil {
-				return
-			}
-
-			port = int(port64)
-		} else {
-			host = address
-		}
-
-		return
-	}
-
-	host, port, err = fnParse(impl.externalAddress)
-	if err != nil {
-		host = ""
-		port = 0
-
-		impl.logger.Warnf("parse external address %v failed: %v", impl.externalAddress, err)
-	}
-
-	if host != "" && port > 0 {
-		return
-	}
-
-	host2, port2, err := fnParse(address)
-	if err != nil {
-		return
-	}
-
-	if host == "" {
-		host = host2
-	}
-
-	if port <= 0 {
-		port = port2
-	}
-
-	if host == "" {
-		ips, errI := iputils.LocalIPv4s()
-		if errI == nil && len(ips) > 0 {
-			host = ips[0]
-		}
-	}
-
-	if host == "" || port < 0 {
-		err = cuserror.NewWithErrorMsg(fmt.Sprintf("invalid host port: %v,%v", host, port))
-
-		return
-	}
-
-	return
 }

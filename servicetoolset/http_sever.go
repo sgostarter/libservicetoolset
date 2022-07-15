@@ -6,9 +6,11 @@ import (
 	"net/http"
 
 	"github.com/sgostarter/i/l"
+	"github.com/sgostarter/librediscovery/discovery"
 )
 
 type HTTPServerConfig struct {
+	Name              string            `yaml:"name" json:"name"`
 	Address           string            `yaml:"address" json:"address"`
 	Handler           http.Handler      `json:"-" yaml:"-"`
 	DiscoveryExConfig DiscoveryExConfig `yaml:"discovery_ex_config" json:"discovery_ex_config"`
@@ -18,22 +20,26 @@ type HTTPServer interface {
 	Run(ctx context.Context) (err error)
 }
 
-func NewHTTPServer(address string, logger l.Wrapper, handler http.Handler) HTTPServer {
+func NewHTTPServer(name, address string, handler http.Handler, discoveryExConfig *DiscoveryExConfig, logger l.Wrapper) HTTPServer {
 	if logger != nil {
 		logger = l.NewNopLoggerWrapper()
 	}
 
 	return &httpServerImpl{
-		address: address,
-		logger:  logger.WithFields(l.StringField(l.ClsKey, "httpServerImpl")),
-		handler: handler,
+		name:              name,
+		address:           address,
+		handler:           handler,
+		discoveryExConfig: discoveryExConfig,
+		logger:            logger.WithFields(l.StringField(l.ClsKey, "httpServerImpl")),
 	}
 }
 
 type httpServerImpl struct {
-	address string
-	logger  l.Wrapper
-	handler http.Handler
+	name              string
+	address           string
+	handler           http.Handler
+	discoveryExConfig *DiscoveryExConfig
+	logger            l.Wrapper
 }
 
 func (impl *httpServerImpl) Run(ctx context.Context) (err error) {
@@ -51,6 +57,11 @@ func (impl *httpServerImpl) Run(ctx context.Context) (err error) {
 
 	impl.logger.Infof("http server listening on %v", impl.address)
 
+	err = impl.startDiscovery()
+	if err != nil {
+		impl.logger.Errorf("http server discovery failed: %w", err)
+	}
+
 	go func() {
 		err = server.Serve(l)
 		if err != nil {
@@ -67,4 +78,25 @@ func (impl *httpServerImpl) Run(ctx context.Context) (err error) {
 	_ = server.Close()
 
 	return
+}
+
+func (impl *httpServerImpl) startDiscovery() error {
+	if impl.name == "" || impl.discoveryExConfig == nil || impl.discoveryExConfig.Setter == nil {
+		return nil
+	}
+
+	host, port, err := GetDiscoveryHostAndPort(impl.discoveryExConfig.ExternalAddress, impl.address)
+	if err != nil {
+		return err
+	}
+
+	serviceInfos := []*discovery.ServiceInfo{
+		{
+			Host:        host,
+			Port:        port,
+			ServiceName: discovery.BuildDiscoveryServerName(discovery.TypeBuildInHTTP, impl.name, ""),
+		},
+	}
+
+	return impl.discoveryExConfig.Setter.Start(serviceInfos)
 }
