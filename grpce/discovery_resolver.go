@@ -74,7 +74,7 @@ func newDiscoveryBuilder(getter discovery.Getter, logger l.Wrapper, schema strin
 		serviceInfos: make(map[string][]resolver.Address),
 	}
 
-	err := builder.getter.Start(builder.onServiceDiscovery, discovery.TypeOption(discovery.TypeGRpc))
+	err := builder.getter.Start(builder.onServiceDiscovery, discovery.TypeOption(discovery.TypeBuildInGRPC))
 	if err != nil {
 		return nil, err
 	}

@@ -326,7 +326,7 @@ func (impl *gRPCServerImpl) startDiscovery(server *grpc.Server) error {
 		{
 			Host:        host,
 			Port:        port,
-			ServiceName: discovery.BuildDiscoveryServerName(discovery.TypeGRpc, impl.serverName, ""),
+			ServiceName: discovery.BuildDiscoveryServerName(discovery.TypeBuildInGRPC, impl.serverName, ""),
 			Meta:        meta,
 		},
 	}
@@ -339,7 +339,7 @@ func (impl *gRPCServerImpl) startDiscovery(server *grpc.Server) error {
 			serviceInfos = append(serviceInfos, &discovery.ServiceInfo{
 				Host:        host,
 				Port:        port,
-				ServiceName: discovery.BuildDiscoveryServerName(discovery.TypeHttp, impl.serverName, ""),
+				ServiceName: discovery.BuildDiscoveryServerName(discovery.TypeBuildInGRPCWeb, impl.serverName, ""),
 				Meta:        meta,
 			})
 		}

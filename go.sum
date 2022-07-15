@@ -445,8 +445,8 @@ github.com/sgostarter/libconfig v0.0.0-20220501124634-dd2bd2401e61 h1:X9DVGF3F0y
 github.com/sgostarter/libconfig v0.0.0-20220501124634-dd2bd2401e61/go.mod h1:5KLny8g++hHgCBbsMYRpxSUsJIi77h/3/CftIiWJox8=
 github.com/sgostarter/libeasygo v0.1.23 h1:4EwbCqd3kUteocnd3yNLXIRvgtn+hw3rV+rsr9O3sSM=
 github.com/sgostarter/libeasygo v0.1.23/go.mod h1:9yzt7GjBY+y38GJfEWq9rXY2ooXbYOUo+MIy/GMXAZU=
-github.com/sgostarter/librediscovery v0.0.2 h1:w4CEP286lPwzU/stVE5A4QBWwE6PZQ711HqF5JI+0LE=
-github.com/sgostarter/librediscovery v0.0.2/go.mod h1:A05Km5fvfwnEvW4PgY7TmR7x0ZIoL3b+8NwYvngy8sI=
+github.com/sgostarter/librediscovery v0.0.3 h1:EFKtmTOzgLSrHNtt0PNoKpqv0XBAV7uo57hN6UlSeGY=
+github.com/sgostarter/librediscovery v0.0.3/go.mod h1:A05Km5fvfwnEvW4PgY7TmR7x0ZIoL3b+8NwYvngy8sI=
 github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24/go.mod h1:M+9NzErvs504Cn4c5DxATwIqPbtswREoFCre64PpcG4=
 github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
