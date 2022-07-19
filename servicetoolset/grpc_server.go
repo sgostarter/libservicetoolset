@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -15,6 +16,7 @@ import (
 	"github.com/sgostarter/libservicetoolset/grpce/interceptors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -32,6 +34,8 @@ type GRPCServerConfig struct {
 	Name              string             `yaml:"name" json:"name"`
 	MetaTransKeys     []string           `yaml:"meta_trans_keys" json:"meta_trans_keys"`
 	DiscoveryExConfig *DiscoveryExConfig `yaml:"discovery_ex_config" json:"discovery_ex_config"`
+
+	KeepAliveDuration time.Duration `yaml:"keep_alive_duration" json:"keep_alive_duration"`
 }
 
 type BeforeServerStart func(server *grpc.Server) error
@@ -72,6 +76,7 @@ func NewGRPCServer(routineMan routineman.RoutineMan, cfg *GRPCServerConfig, opts
 		webAddress:        cfg.WebAddress,
 		serverName:        cfg.Name,
 		metaTransKeys:     cfg.MetaTransKeys,
+		keepaliveDuration: cfg.KeepAliveDuration,
 		extraInterceptors: extraInterceptors,
 		defInit:           defInit,
 		logger:            logger.WithFields(l.StringField(l.ClsKey, "gRPCServerImpl")),
@@ -96,6 +101,7 @@ type gRPCServerImpl struct {
 	serverName        string
 	metaTransKeys     []string
 	extraInterceptors []interface{}
+	keepaliveDuration time.Duration
 	serverOptions     []grpc.ServerOption
 	defInit           BeforeServerStart
 	logger            l.Wrapper
@@ -287,6 +293,12 @@ func (impl *gRPCServerImpl) getInterceptors() []grpc.ServerOption {
 func (impl *gRPCServerImpl) getServerOptions() (options []grpc.ServerOption) {
 	options = append(options, impl.serverOptions...)
 	options = append(options, impl.getInterceptors()...)
+
+	if impl.keepaliveDuration > 0 {
+		options = append(options, grpc.KeepaliveParams(keepalive.ServerParameters{
+			Time: impl.keepaliveDuration,
+		}))
+	}
 
 	return
 }
