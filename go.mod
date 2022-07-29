@@ -8,7 +8,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/sgostarter/i v0.1.12
-	github.com/sgostarter/libeasygo v0.1.24
+	github.com/sgostarter/libeasygo v0.1.25
 	github.com/sgostarter/librediscovery v0.0.6
 	github.com/stretchr/testify v1.7.1
 	go.uber.org/atomic v1.9.0
@@ -37,7 +37,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect
-	github.com/sgostarter/libconfig v0.0.0-20220501124634-dd2bd2401e61 // indirect
+	github.com/sgostarter/libconfig v0.0.0-20220729130023-9d19e6a36464 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
