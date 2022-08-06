@@ -10,11 +10,12 @@ require (
 	github.com/sgostarter/i v0.1.12
 	github.com/sgostarter/libeasygo v0.1.25
 	github.com/sgostarter/librediscovery v0.0.6
+	github.com/sgostarter/libstg v0.0.0-20220806115111-3aaf624737c2
 	github.com/stretchr/testify v1.7.1
 	go.uber.org/atomic v1.9.0
 	google.golang.org/grpc v1.47.0
 	google.golang.org/grpc/examples v0.0.0-20220701230310-8c494a9aed3e
-	gorm.io/gorm v1.22.4
+	gorm.io/gorm v1.23.8
 	xorm.io/xorm v1.3.1
 )
 
@@ -29,7 +30,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.3 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
@@ -46,7 +47,7 @@ require (
 	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	gorm.io/driver/mysql v1.2.1 // indirect
+	gorm.io/driver/mysql v1.3.5 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 	xorm.io/builder v0.3.11-0.20220531020008-1bd24a7dc978 // indirect
 )

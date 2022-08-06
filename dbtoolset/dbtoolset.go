@@ -9,7 +9,9 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/sgostarter/i/l"
-	"github.com/sgostarter/libeasygo/stg"
+	"github.com/sgostarter/libstg/mysqlgorm"
+	"github.com/sgostarter/libstg/mysqlxorm"
+	"github.com/sgostarter/libstg/redisv8"
 	"gorm.io/gorm"
 	"xorm.io/xorm"
 )
@@ -65,7 +67,7 @@ func NewToolset(cfg *Config, logger l.Wrapper) *Toolset {
 
 func (toolset *Toolset) GetRedis() *redis.Client {
 	toolset.redisOnce.Do(func() {
-		redisCli, err := stg.InitRedis(toolset.cfg.RedisDSN)
+		redisCli, err := redisv8.InitRedis(toolset.cfg.RedisDSN)
 		if err != nil {
 			toolset.logger.WithFields(l.ErrorField(err), l.StringField("dsn", toolset.cfg.RedisDSN)).Error("initRedisFailed")
 
@@ -81,7 +83,7 @@ func (toolset *Toolset) GetRedis() *redis.Client {
 func (toolset *Toolset) GetRedisByName(name string) *redis.Client {
 	toolset.redisListOnce.Do(func() {
 		for name, dsn := range toolset.cfg.RedisDSNList {
-			redisCli, err := stg.InitRedis(dsn)
+			redisCli, err := redisv8.InitRedis(dsn)
 			if err != nil {
 				toolset.logger.WithFields(l.ErrorField(err), l.StringField("name", name),
 					l.StringField("dsn", toolset.cfg.RedisDSN)).Error("initRedisFailed")
@@ -106,7 +108,7 @@ func (toolset *Toolset) GetRedisByName(name string) *redis.Client {
 
 func (toolset *Toolset) GetXOrm() *xorm.Engine {
 	toolset.xOrmOnce.Do(func() {
-		db, err := xorm.NewEngine("mysql", toolset.cfg.MysqlDSN)
+		db, err := mysqlxorm.InitXorm(toolset.cfg.MysqlDSN)
 		if err != nil {
 			toolset.logger.WithFields(l.ErrorField(err), l.StringField("dsn", toolset.cfg.MysqlDSN)).
 				Error("initXOrmFailed")
@@ -123,7 +125,7 @@ func (toolset *Toolset) GetXOrm() *xorm.Engine {
 func (toolset *Toolset) GetXOrmByName(name string) *xorm.Engine {
 	toolset.xOrmListOnce.Do(func() {
 		for name, dsn := range toolset.cfg.MysqlDSNList {
-			db, err := xorm.NewEngine("mysql", dsn)
+			db, err := mysqlxorm.InitXorm(dsn)
 			if err != nil {
 				toolset.logger.WithFields(l.ErrorField(err), l.StringField("dsn", toolset.cfg.MysqlDSN),
 					l.StringField("name", name)).Error("initXOrmFailed")
@@ -148,7 +150,7 @@ func (toolset *Toolset) GetXOrmByName(name string) *xorm.Engine {
 
 func (toolset *Toolset) GetGOrm() *gorm.DB {
 	toolset.gOrmOnce.Do(func() {
-		db, err := stg.InitGorm(toolset.cfg.MysqlDSN)
+		db, err := mysqlgorm.InitGorm(toolset.cfg.MysqlDSN)
 		if err != nil {
 			toolset.logger.WithFields(l.ErrorField(err), l.StringField("dsn", toolset.cfg.MysqlDSN)).
 				Error("initGOrmFailed")
@@ -165,7 +167,7 @@ func (toolset *Toolset) GetGOrm() *gorm.DB {
 func (toolset *Toolset) GetGOrmByName(name string) *gorm.DB {
 	toolset.gOrmListOnce.Do(func() {
 		for name, dsn := range toolset.cfg.MysqlDSNList {
-			db, err := stg.InitGorm(dsn)
+			db, err := mysqlgorm.InitGorm(dsn)
 			if err != nil {
 				toolset.logger.WithFields(l.ErrorField(err), l.StringField("dsn", dsn),
 					l.StringField("name", name)).Error("initGOrmFailed")
