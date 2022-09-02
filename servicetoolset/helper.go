@@ -14,17 +14,19 @@ import (
 )
 
 type GRPCTlsConfig struct {
-	RootCAs    [][]byte `yaml:"RootCAs" json:"root_cas" `
-	Cert       []byte   `yaml:"Cert" json:"cert"`
-	Key        []byte   `yaml:"Key" json:"key"`
-	ServerName string   `yaml:"ServerName" json:"server_name"`
+	RootCAs            [][]byte `yaml:"RootCAs" json:"root_cas" `
+	Cert               []byte   `yaml:"Cert" json:"cert"`
+	Key                []byte   `yaml:"Key" json:"key"`
+	ServerName         string   `yaml:"ServerName" json:"server_name"`
+	InsecureSkipVerify bool     `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
 }
 
 type GRPCTlsFileConfig struct {
-	RootCAs    []string `yaml:"RootCAs" json:"root_cas" `
-	Cert       string   `yaml:"Cert" json:"cert"`
-	Key        string   `yaml:"Key" json:"key"`
-	ServerName string   `yaml:"ServerName" json:"server_name"`
+	RootCAs            []string `yaml:"RootCAs" json:"root_cas" `
+	Cert               string   `yaml:"Cert" json:"cert"`
+	Key                string   `yaml:"Key" json:"key"`
+	ServerName         string   `yaml:"ServerName" json:"server_name"`
+	InsecureSkipVerify bool     `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
 }
 
 func GRPCTlsConfigMap(fileCfg *GRPCTlsFileConfig) (*GRPCTlsConfig, error) {
@@ -62,6 +64,7 @@ func GRPCTlsConfigMap(fileCfg *GRPCTlsFileConfig) (*GRPCTlsConfig, error) {
 	}
 
 	cfg.Key = d
+	cfg.InsecureSkipVerify = fileCfg.InsecureSkipVerify
 
 	return cfg, nil
 }
@@ -118,9 +121,10 @@ func GenClientTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
 
 	// nolint: gosec
 	tlsConfig = &tls.Config{
-		ServerName:   cfg.ServerName,
-		Certificates: []tls.Certificate{cert},
-		RootCAs:      caPool,
+		ServerName:         cfg.ServerName,
+		Certificates:       []tls.Certificate{cert},
+		RootCAs:            caPool,
+		InsecureSkipVerify: cfg.InsecureSkipVerify,
 	}
 
 	return
