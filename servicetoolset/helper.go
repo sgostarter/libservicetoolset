@@ -14,10 +14,11 @@ import (
 )
 
 type GRPCTlsConfig struct {
-	RootCAs    [][]byte `yaml:"RootCAs" json:"root_cas" `
-	Cert       []byte   `yaml:"Cert" json:"cert"`
-	Key        []byte   `yaml:"Key" json:"key"`
-	ServerName string   `yaml:"ServerName" json:"server_name"`
+	RootCAs            [][]byte `yaml:"RootCAs" json:"root_cas" `
+	Cert               []byte   `yaml:"Cert" json:"cert"`
+	Key                []byte   `yaml:"Key" json:"key"`
+	ServerName         string   `yaml:"ServerName" json:"server_name"`
+	InsecureSkipVerify bool     `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
 }
 
 type GRPCTlsFileConfig struct {
@@ -86,9 +87,10 @@ func GenServerTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
 
 	// nolint: gosec
 	tlsConfig = &tls.Config{
-		ClientAuth:   tls.RequireAndVerifyClientCert,
-		Certificates: []tls.Certificate{cert},
-		ClientCAs:    caPool,
+		ClientAuth:         tls.RequireAndVerifyClientCert,
+		Certificates:       []tls.Certificate{cert},
+		ClientCAs:          caPool,
+		InsecureSkipVerify: cfg.InsecureSkipVerify,
 	}
 
 	return
