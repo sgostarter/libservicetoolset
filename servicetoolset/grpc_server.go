@@ -218,7 +218,10 @@ func (impl *gRPCServerImpl) webRoutine(ctx context.Context, exiting func() bool)
 
 	impl.logger.Info("grpc web server gRPCListen on:", impl.gRPCWebListen.Addr())
 
-	httpServer := &http.Server{Handler: h}
+	httpServer := &http.Server{
+		ReadHeaderTimeout: time.Second * 30,
+		Handler:           h,
+	}
 	err = httpServer.Serve(impl.gRPCWebListen)
 
 	if err != nil {

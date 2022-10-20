@@ -115,9 +115,7 @@ func (builder *discoveryBuilder) Scheme() string {
 	return builder.schema
 }
 
-//
 // discovery callback
-//
 func (builder *discoveryBuilder) onServiceDiscovery(services []*discovery.ServiceInfo) {
 	serviceInfos := make(map[string][]resolver.Address)
 
@@ -164,9 +162,7 @@ func (builder *discoveryBuilder) onServiceDiscovery(services []*discovery.Servic
 	}()
 }
 
-//
 // server name resolver callback
-//
 func (builder *discoveryBuilder) resolve(serverName string) []resolver.Address {
 	builder.serviceInfosLock.RLock()
 	defer builder.serviceInfosLock.RUnlock()

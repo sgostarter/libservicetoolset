@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 
@@ -34,16 +34,13 @@ func GRPCTlsConfigMap(fileCfg *GRPCTlsFileConfig) (*GRPCTlsConfig, error) {
 		return nil, nil
 	}
 
-	if fileCfg.Cert == "" || fileCfg.Key == "" {
-		return nil, commerr.ErrInvalidArgument
-	}
-
 	cfg := &GRPCTlsConfig{
-		ServerName: fileCfg.ServerName,
+		ServerName:         fileCfg.ServerName,
+		InsecureSkipVerify: fileCfg.InsecureSkipVerify,
 	}
 
 	for _, ca := range fileCfg.RootCAs {
-		d, err := ioutil.ReadFile(ca)
+		d, err := os.ReadFile(ca)
 		if err != nil {
 			return nil, err
 		}
@@ -51,20 +48,21 @@ func GRPCTlsConfigMap(fileCfg *GRPCTlsFileConfig) (*GRPCTlsConfig, error) {
 		cfg.RootCAs = append(cfg.RootCAs, d)
 	}
 
-	d, err := ioutil.ReadFile(fileCfg.Cert)
-	if err != nil {
-		return nil, err
+	if fileCfg.Cert != "" && fileCfg.Key != "" {
+		d, err := os.ReadFile(fileCfg.Cert)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.Cert = d
+
+		d, err = os.ReadFile(fileCfg.Key)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.Key = d
 	}
-
-	cfg.Cert = d
-
-	d, err = ioutil.ReadFile(fileCfg.Key)
-	if err != nil {
-		return nil, err
-	}
-
-	cfg.Key = d
-	cfg.InsecureSkipVerify = fileCfg.InsecureSkipVerify
 
 	return cfg, nil
 }

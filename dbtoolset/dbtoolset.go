@@ -45,7 +45,7 @@ type Toolset struct {
 	xOrmList     map[string]*xorm.Engine
 
 	gOrmOnce sync.Once
-	gOrmDb   *gorm.DB
+	gOrmDB   *gorm.DB
 
 	gOrmListOnce sync.Once
 	gOrmList     map[string]*gorm.DB
@@ -158,10 +158,10 @@ func (toolset *Toolset) GetGOrm() *gorm.DB {
 			return
 		}
 
-		toolset.gOrmDb = db
+		toolset.gOrmDB = db
 	})
 
-	return toolset.gOrmDb
+	return toolset.gOrmDB
 }
 
 func (toolset *Toolset) GetGOrmByName(name string) *gorm.DB {

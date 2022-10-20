@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/sgostarter/i/l"
 	"github.com/sgostarter/librediscovery/discovery"
@@ -47,7 +48,8 @@ func (impl *httpServerImpl) Run(ctx context.Context) (err error) {
 	defer cancel()
 
 	server := &http.Server{
-		Handler: impl.handler,
+		ReadHeaderTimeout: time.Second * 30,
+		Handler:           impl.handler,
 	}
 
 	l, err := net.Listen("tcp", impl.address)
