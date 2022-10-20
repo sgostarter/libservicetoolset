@@ -48,6 +48,10 @@ func DialGRpcServerByName(schema, serverName string, cfg *GRPCClientConfig, opts
 }
 
 func DialGRPC(cfg *GRPCClientConfig, opts []grpc.DialOption) (*grpc.ClientConn, error) {
+	return DialGRPCEx(context.Background(), cfg, opts)
+}
+
+func DialGRPCEx(ctx context.Context, cfg *GRPCClientConfig, opts []grpc.DialOption) (*grpc.ClientConn, error) {
 	dialOptions := make([]grpc.DialOption, 0, len(opts)+1)
 
 	unaryInterceptors := []grpc.UnaryClientInterceptor{
@@ -73,7 +77,7 @@ func DialGRPC(cfg *GRPCClientConfig, opts []grpc.DialOption) (*grpc.ClientConn, 
 		dialOptions = append(dialOptions, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	return grpc.Dial(cfg.Target, dialOptions...)
+	return grpc.DialContext(ctx, cfg.Target, dialOptions...)
 }
 
 func RegisterSchemas(ctx context.Context, cfg *RegisterSchemasConfig, logger l.Wrapper) error {
