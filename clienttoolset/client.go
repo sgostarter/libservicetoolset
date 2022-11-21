@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/sgostarter/i/commerr"
 	"github.com/sgostarter/i/l"
-	"github.com/sgostarter/libeasygo/commerr"
 	"github.com/sgostarter/librediscovery/discovery"
 	"github.com/sgostarter/libservicetoolset/grpce"
 	"github.com/sgostarter/libservicetoolset/grpce/interceptors"

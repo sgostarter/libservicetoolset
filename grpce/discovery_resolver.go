@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sgostarter/i/commerr"
 	"github.com/sgostarter/i/l"
-	"github.com/sgostarter/libeasygo/commerr"
 	"github.com/sgostarter/libeasygo/cuserror"
 	"github.com/sgostarter/librediscovery/discovery"
 	"google.golang.org/grpc/resolver"

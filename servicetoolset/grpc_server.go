@@ -9,8 +9,8 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	"github.com/sgostarter/i/commerr"
 	"github.com/sgostarter/i/l"
-	"github.com/sgostarter/libeasygo/commerr"
 	"github.com/sgostarter/libeasygo/routineman"
 	"github.com/sgostarter/librediscovery/discovery"
 	"github.com/sgostarter/libservicetoolset/grpce/interceptors"

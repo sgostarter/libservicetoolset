@@ -7,8 +7,8 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/improbable-eng/grpc-web v0.15.0
-	github.com/sgostarter/i v0.1.12
-	github.com/sgostarter/libeasygo v0.1.33
+	github.com/sgostarter/i v0.1.13
+	github.com/sgostarter/libeasygo v0.1.36
 	github.com/sgostarter/librediscovery v0.0.6
 	github.com/sgostarter/libstg v0.0.0-20220806115111-3aaf624737c2
 	github.com/stretchr/testify v1.7.1

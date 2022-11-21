@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sgostarter/libeasygo/commerr"
+	"github.com/sgostarter/i/commerr"
 	"github.com/sgostarter/libeasygo/cuserror"
 	"github.com/sgostarter/libeasygo/iputils"
 )

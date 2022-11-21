@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/sgostarter/i/commerr"
 	"github.com/sgostarter/i/l"
-	"github.com/sgostarter/libeasygo/commerr"
 	"go.uber.org/atomic"
 	"google.golang.org/grpc"
 )
