@@ -296,6 +296,7 @@ github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+o
 github.com/klauspost/compress v1.10.3/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
 github.com/klauspost/compress v1.11.7 h1:0hzRabrMN4tSTvMfnL3SCv1ZGeAP23ynzodBgaHeMeg=
 github.com/klauspost/compress v1.11.7/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
+github.com/klauspost/compress v1.13.6/go.mod h1:/3/Vjq9QcHkK5uEr5lBEmyoZ1iFhe47etQ6QUkpK6sk=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.2/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
@@ -450,6 +451,8 @@ github.com/sgostarter/libconfig v0.0.0-20220729130023-9d19e6a36464/go.mod h1:5KL
 github.com/sgostarter/libeasygo v0.1.24/go.mod h1:9yzt7GjBY+y38GJfEWq9rXY2ooXbYOUo+MIy/GMXAZU=
 github.com/sgostarter/libeasygo v0.1.36 h1:kSpqlpMdbGqWxWuHnlvUZ0wJFYYH+0ipVie8X0c2Ef4=
 github.com/sgostarter/libeasygo v0.1.36/go.mod h1:TsNnaKFCFtFW6i+usykffm5Dvm3RjvwnvfW1FtSSdUM=
+github.com/sgostarter/libeasygo v0.1.38 h1:Fm2RlZm60WUAYeK/ki6B2HGUZyVBzWq5Lir3fy21tNA=
+github.com/sgostarter/libeasygo v0.1.38/go.mod h1:q6VzEE7qeIIdqCiSf7JjgtGRdtX1bJFymHAve0Dg9wk=
 github.com/sgostarter/librediscovery v0.0.6 h1:7XJVUNCVL4q5frOkzPBiPHLkYCaqXq8B5X1MplJJq48=
 github.com/sgostarter/librediscovery v0.0.6/go.mod h1:wcf7H3RCCrF4df4wgOVnXYYK/KEoDntgn+SZaZRDo+s=
 github.com/sgostarter/libstg v0.0.0-20220806115111-3aaf624737c2 h1:+KXv1YPWkvHrGUF3sYZTVwe+pfdJBH2361HiJHOlsKM=
@@ -753,6 +756,7 @@ gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b h1:h8qDotaEPuJATrMmW04NCwg7v22aHH28wwpauUhK9Oo=
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gorm.io/driver/mysql v1.2.1/go.mod h1:qsiz+XcAyMrS6QY+X3M9R6b/lKM1imKmcuK9kac5LTo=
 gorm.io/driver/mysql v1.3.5 h1:iWBTVW/8Ij5AG4e0G/zqzaJblYkBI1VIL1LG2HUGsvY=
 gorm.io/driver/mysql v1.3.5/go.mod h1:sSIebwZAVPiT+27jK9HIwvsqOGKx3YMPmrA3mBJR10c=

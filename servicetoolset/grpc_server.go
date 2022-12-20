@@ -35,7 +35,8 @@ type GRPCServerConfig struct {
 	MetaTransKeys     []string           `yaml:"meta_trans_keys" json:"meta_trans_keys"`
 	DiscoveryExConfig *DiscoveryExConfig `yaml:"discovery_ex_config" json:"discovery_ex_config"`
 
-	KeepAliveDuration time.Duration `yaml:"keep_alive_duration" json:"keep_alive_duration"`
+	KeepAliveDuration        time.Duration `yaml:"keep_alive_duration" json:"keep_alive_duration"`
+	EnforcementPolicyMinTime time.Duration `yaml:"enforcement_policy_min_time" json:"enforcement_policy_min_time"`
 }
 
 type BeforeServerStart func(server *grpc.Server) error
@@ -48,8 +49,8 @@ type GRPCServer interface {
 	Run(ctx context.Context) (err error)
 }
 
-func NewGRPCServer(routineMan routineman.RoutineMan, cfg *GRPCServerConfig, opts []grpc.ServerOption, defInit BeforeServerStart,
-	logger l.Wrapper, extraInterceptors ...interface{}) (GRPCServer, error) {
+func NewGRPCServer(routineMan routineman.RoutineMan, cfg *GRPCServerConfig, opts []grpc.ServerOption,
+	defInit BeforeServerStart, logger l.Wrapper, extraInterceptors ...interface{}) (GRPCServer, error) {
 	if routineMan == nil {
 		routineMan = routineman.NewRoutineMan(context.Background(), logger)
 	}
@@ -71,16 +72,17 @@ func NewGRPCServer(routineMan routineman.RoutineMan, cfg *GRPCServerConfig, opts
 	}
 
 	impl := &gRPCServerImpl{
-		routineMan:        routineMan,
-		address:           cfg.Address,
-		webAddress:        cfg.WebAddress,
-		serverName:        cfg.Name,
-		metaTransKeys:     cfg.MetaTransKeys,
-		keepaliveDuration: cfg.KeepAliveDuration,
-		extraInterceptors: extraInterceptors,
-		defInit:           defInit,
-		logger:            logger.WithFields(l.StringField(l.ClsKey, "gRPCServerImpl")),
-		serverOptions:     serverOptions,
+		routineMan:               routineMan,
+		address:                  cfg.Address,
+		webAddress:               cfg.WebAddress,
+		serverName:               cfg.Name,
+		metaTransKeys:            cfg.MetaTransKeys,
+		keepaliveDuration:        cfg.KeepAliveDuration,
+		EnforcementPolicyMinTime: cfg.EnforcementPolicyMinTime,
+		extraInterceptors:        extraInterceptors,
+		defInit:                  defInit,
+		logger:                   logger.WithFields(l.StringField(l.ClsKey, "gRPCServerImpl")),
+		serverOptions:            serverOptions,
 	}
 
 	if cfg.DiscoveryExConfig != nil && cfg.DiscoveryExConfig.Setter != nil {
@@ -95,16 +97,17 @@ func NewGRPCServer(routineMan routineman.RoutineMan, cfg *GRPCServerConfig, opts
 type gRPCServerImpl struct {
 	lock sync.Mutex
 
-	routineMan        routineman.RoutineMan
-	address           string
-	webAddress        string
-	serverName        string
-	metaTransKeys     []string
-	extraInterceptors []interface{}
-	keepaliveDuration time.Duration
-	serverOptions     []grpc.ServerOption
-	defInit           BeforeServerStart
-	logger            l.Wrapper
+	routineMan               routineman.RoutineMan
+	address                  string
+	webAddress               string
+	serverName               string
+	metaTransKeys            []string
+	extraInterceptors        []interface{}
+	keepaliveDuration        time.Duration
+	EnforcementPolicyMinTime time.Duration
+	serverOptions            []grpc.ServerOption
+	defInit                  BeforeServerStart
+	logger                   l.Wrapper
 
 	gRPCListen    net.Listener
 	gRPCWebListen net.Listener
@@ -300,6 +303,13 @@ func (impl *gRPCServerImpl) getServerOptions() (options []grpc.ServerOption) {
 	if impl.keepaliveDuration > 0 {
 		options = append(options, grpc.KeepaliveParams(keepalive.ServerParameters{
 			Time: impl.keepaliveDuration,
+		}))
+	}
+
+	if impl.EnforcementPolicyMinTime > 0 {
+		options = append(options, grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{
+			MinTime:             impl.EnforcementPolicyMinTime,
+			PermitWithoutStream: true,
 		}))
 	}
 

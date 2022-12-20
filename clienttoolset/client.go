@@ -3,6 +3,7 @@ package clienttoolset
 import (
 	"context"
 	"fmt"
+	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/sgostarter/i/commerr"
@@ -14,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 )
 
 const (
@@ -28,6 +30,9 @@ type GRPCClientConfig struct {
 	Target        string                        `yaml:"target" json:"target"`
 	TLSConfig     *servicetoolset.GRPCTlsConfig `yaml:"tls_config" json:"tls_config"`
 	MetaTransKeys []string                      `json:"-" yaml:"-" ignored:"true"`
+
+	KeepAliveTime    time.Duration `json:"keep_alive_time" yaml:"keep_alive_time"`
+	KeepAliveTimeout time.Duration `json:"keep_alive_timeout" yaml:"keep_alive_timeout"`
 }
 
 type RegisterSchemasConfig struct {
@@ -75,6 +80,18 @@ func DialGRPCEx(ctx context.Context, cfg *GRPCClientConfig, opts []grpc.DialOpti
 		dialOptions = append(dialOptions, grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)))
 	} else {
 		dialOptions = append(dialOptions, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+
+	if cfg.KeepAliveTime > 0 {
+		if cfg.KeepAliveTimeout < time.Second {
+			cfg.KeepAliveTimeout = time.Second
+		}
+
+		dialOptions = append(dialOptions, grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time:                cfg.KeepAliveTime,    // send pings every x seconds if there is no activity
+			Timeout:             cfg.KeepAliveTimeout, // wait x second for ping ack before considering the connection dead
+			PermitWithoutStream: true,                 // send pings even without active streams
+		}))
 	}
 
 	return grpc.DialContext(ctx, cfg.Target, dialOptions...)
