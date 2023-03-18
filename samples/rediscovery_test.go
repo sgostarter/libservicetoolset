@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/sgostarter/i/l"
-	"github.com/sgostarter/libeasygo/stg"
+	"github.com/sgostarter/libeasygo/stg/redisex"
 	"github.com/sgostarter/libeasygo/ut"
 	"github.com/sgostarter/librediscovery"
 	"github.com/sgostarter/libservicetoolset/clienttoolset"
@@ -35,7 +35,7 @@ func Test(t *testing.T) {
 	serverName := "testsvr"
 
 	cfg := ut.SetupUTConfig4Redis(t)
-	redisClient, err := stg.InitRedis(cfg.RedisDNS)
+	redisClient, err := redisex.InitRedis(cfg.RedisDNS)
 	assert.Nil(t, err)
 
 	defer redisClient.Close()
