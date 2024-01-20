@@ -65,7 +65,7 @@ func (st *ServerToolset) CreateHTTPServer(cfg *HTTPServerConfig) error {
 }
 
 func (st *ServerToolset) Start() error {
-	if !st.started.CAS(false, true) {
+	if !st.started.CompareAndSwap(false, true) {
 		return commerr.ErrAlreadyExists
 	}
 

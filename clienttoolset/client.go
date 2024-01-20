@@ -97,7 +97,7 @@ func DialGRPCEx(ctx context.Context, cfg *GRPCClientConfig, opts []grpc.DialOpti
 	return grpc.DialContext(ctx, cfg.Target, dialOptions...)
 }
 
-func RegisterSchemas(ctx context.Context, cfg *RegisterSchemasConfig, logger l.Wrapper) error {
+func RegisterSchemas(_ context.Context, cfg *RegisterSchemasConfig, logger l.Wrapper) error {
 	if logger == nil {
 		logger = l.NewNopLoggerWrapper()
 	}

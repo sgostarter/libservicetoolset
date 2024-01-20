@@ -24,7 +24,7 @@ type TestHelloWorld struct {
 	id string
 }
 
-func (o *TestHelloWorld) SayHello(ctx context.Context, req *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
+func (o *TestHelloWorld) SayHello(_ context.Context, req *helloworld.HelloRequest) (*helloworld.HelloReply, error) {
 	return &helloworld.HelloReply{
 		Message: fmt.Sprintf("Hi %v, I'm %v", req.Name, o.id),
 	}, nil

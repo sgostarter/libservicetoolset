@@ -209,7 +209,7 @@ func (impl *gRPCServerImpl) Start(init BeforeServerStart) (err error) {
 	return
 }
 
-func (impl *gRPCServerImpl) webRoutine(ctx context.Context, exiting func() bool) {
+func (impl *gRPCServerImpl) webRoutine(_ context.Context, _ func() bool) {
 	h, err := NewGRPCWebHandler(GRPCWebHandlerInputParameters{
 		GRPCServer:          impl.s,
 		GRPCWebUseWebsocket: false,
@@ -232,7 +232,7 @@ func (impl *gRPCServerImpl) webRoutine(ctx context.Context, exiting func() bool)
 	}
 }
 
-func (impl *gRPCServerImpl) mainRoutine(ctx context.Context, exiting func() bool) {
+func (impl *gRPCServerImpl) mainRoutine(_ context.Context, _ func() bool) {
 	err := impl.s.Serve(impl.gRPCListen)
 	if err != nil {
 		impl.logger.WithFields(l.ErrorField(err)).Error("GRPCServe")
