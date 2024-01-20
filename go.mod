@@ -8,8 +8,8 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/sgostarter/i v0.1.16
-	github.com/sgostarter/libeasygo v0.1.65
-	github.com/sgostarter/librediscovery v0.0.9
+	github.com/sgostarter/libeasygo v0.1.66
+	github.com/sgostarter/librediscovery v0.0.10
 	github.com/sgostarter/libstg v0.0.0-20220806115111-3aaf624737c2
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/atomic v1.11.0
