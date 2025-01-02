@@ -27,9 +27,9 @@ type DiscoveryExConfig struct {
 }
 
 type GRPCServerConfig struct {
-	Address    string         `yaml:"address" json:"address"`
-	TLSConfig  *GRPCTlsConfig `yaml:"tls_config" json:"tls_config"`
-	WebAddress string         `yaml:"web_address" json:"web_address"`
+	Address    string               `yaml:"address" json:"address"`
+	TLSConfig  *GRPCServerTLSConfig `yaml:"tls_config" json:"tls_config"`
+	WebAddress string               `yaml:"web_address" json:"web_address"`
 
 	Name              string             `yaml:"name" json:"name"`
 	MetaTransKeys     []string           `yaml:"meta_trans_keys" json:"meta_trans_keys"`

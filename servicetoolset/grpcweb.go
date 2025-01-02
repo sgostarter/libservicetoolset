@@ -37,13 +37,13 @@ func NewGRPCWebHandler(parameters GRPCWebHandlerInputParameters) (http.Handler, 
 func (s *gRPCWebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	options := []grpcweb.Option{
 		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
-		grpcweb.WithOriginFunc(func(origin string) bool { return true }),
+		grpcweb.WithOriginFunc(func(_ string) bool { return true }),
 	}
 	if s.gRPCWebUseWebsocket {
 		options = append(
 			options,
 			grpcweb.WithWebsockets(true),
-			grpcweb.WithWebsocketOriginFunc(func(req *http.Request) bool { return true }),
+			grpcweb.WithWebsocketOriginFunc(func(_ *http.Request) bool { return true }),
 		)
 
 		if s.gRPCWebPingInterval > 0 {

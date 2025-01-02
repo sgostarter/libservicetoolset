@@ -11,30 +11,121 @@ import (
 	"github.com/sgostarter/i/commerr"
 	"github.com/sgostarter/libeasygo/cuserror"
 	"github.com/sgostarter/libeasygo/iputils"
+	"github.com/sgostarter/libservicetoolset/certpool"
 )
 
-type GRPCTlsConfig struct {
-	RootCAs            [][]byte `yaml:"RootCAs" json:"root_cas" `
-	Cert               []byte   `yaml:"Cert" json:"cert"`
-	Key                []byte   `yaml:"Key" json:"key"`
-	ServerName         string   `yaml:"ServerName" json:"server_name"`
-	InsecureSkipVerify bool     `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
+type ClientAuthType int
+
+// compat old logic
+
+const (
+	RequireAndVerifyClientCert ClientAuthType = iota
+	NoClientCert
+	RequestClientCert
+	RequireAnyClientCert
+	VerifyClientCertIfGiven
+)
+
+func ClientAuthTypeMap(ca ClientAuthType) tls.ClientAuthType {
+	switch ca {
+	case RequireAndVerifyClientCert:
+		return tls.RequireAndVerifyClientCert
+	case RequestClientCert:
+		return tls.RequestClientCert
+	case RequireAnyClientCert:
+		return tls.RequireAnyClientCert
+	case VerifyClientCertIfGiven:
+		return tls.VerifyClientCertIfGiven
+	case NoClientCert:
+		fallthrough
+	default:
+		return tls.NoClientCert
+	}
 }
 
-type GRPCTlsFileConfig struct {
-	RootCAs            []string `yaml:"RootCAs" json:"root_cas" `
-	Cert               string   `yaml:"Cert" json:"cert"`
-	Key                string   `yaml:"Key" json:"key"`
-	ServerName         string   `yaml:"ServerName" json:"server_name"`
-	InsecureSkipVerify bool     `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
+type GRPCServerTLSConfig struct {
+	DisableSystemPool bool           `yaml:"DisableSystemPool" json:"disable_system_pool"`
+	ClientAuth        ClientAuthType `yaml:"ClientAuth" json:"client_auth"`
+
+	RootCAs [][]byte `yaml:"RootCAs" json:"root_cas" `
+	Cert    []byte   `yaml:"Cert" json:"cert"`
+	Key     []byte   `yaml:"Key" json:"key"`
 }
 
-func GRPCTlsConfigMap(fileCfg *GRPCTlsFileConfig) (*GRPCTlsConfig, error) {
+type GRPCClientTLSConfig struct {
+	DisableSystemPool  bool   `yaml:"DisableSystemPool" json:"disable_system_pool"`
+	ServerName         string `yaml:"ServerName" json:"server_name"`
+	InsecureSkipVerify bool   `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
+
+	RootCAs [][]byte `yaml:"RootCAs" json:"root_cas" `
+	Cert    []byte   `yaml:"Cert" json:"cert"`
+	Key     []byte   `yaml:"Key" json:"key"`
+}
+
+type GRPCServerTLSFileConfig struct {
+	DisableSystemPool bool           `yaml:"DisableSystemPool" json:"disable_system_pool"`
+	ClientAuth        ClientAuthType `yaml:"ClientAuth" json:"client_auth"`
+
+	RootCAs []string `yaml:"RootCAs" json:"root_cas" `
+	Cert    string   `yaml:"Cert" json:"cert"`
+	Key     string   `yaml:"Key" json:"key"`
+}
+
+type GRPCClientTLSFileConfig struct {
+	DisableSystemPool  bool   `yaml:"DisableSystemPool" json:"disable_system_pool"`
+	ServerName         string `yaml:"ServerName" json:"server_name"`
+	InsecureSkipVerify bool   `yaml:"InsecureSkipVerify" json:"insecure_skip_verify"`
+
+	RootCAs []string `yaml:"RootCAs" json:"root_cas" `
+	Cert    string   `yaml:"Cert" json:"cert"`
+	Key     string   `yaml:"Key" json:"key"`
+}
+
+func GRPCServerTLSConfigMap(fileCfg *GRPCServerTLSFileConfig) (*GRPCServerTLSConfig, error) {
 	if fileCfg == nil {
 		return nil, nil
 	}
 
-	cfg := &GRPCTlsConfig{
+	cfg := &GRPCServerTLSConfig{
+		DisableSystemPool: fileCfg.DisableSystemPool,
+		ClientAuth:        fileCfg.ClientAuth,
+	}
+
+	for _, ca := range fileCfg.RootCAs {
+		d, err := os.ReadFile(ca)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.RootCAs = append(cfg.RootCAs, d)
+	}
+
+	if fileCfg.Cert != "" && fileCfg.Key != "" {
+		d, err := os.ReadFile(fileCfg.Cert)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.Cert = d
+
+		d, err = os.ReadFile(fileCfg.Key)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.Key = d
+	}
+
+	return cfg, nil
+}
+
+func GRPCClientTLSConfigMap(fileCfg *GRPCClientTLSFileConfig) (*GRPCClientTLSConfig, error) {
+	if fileCfg == nil {
+		return nil, nil
+	}
+
+	cfg := &GRPCClientTLSConfig{
+		DisableSystemPool:  fileCfg.DisableSystemPool,
 		ServerName:         fileCfg.ServerName,
 		InsecureSkipVerify: fileCfg.InsecureSkipVerify,
 	}
@@ -67,14 +158,23 @@ func GRPCTlsConfigMap(fileCfg *GRPCTlsFileConfig) (*GRPCTlsConfig, error) {
 	return cfg, nil
 }
 
-func GenServerTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
+func GenServerTLSConfig(cfg *GRPCServerTLSConfig) (tlsConfig *tls.Config, err error) {
 	if cfg == nil {
 		err = commerr.ErrInvalidArgument
 
 		return
 	}
 
-	caPool := x509.NewCertPool()
+	var caPool *x509.CertPool
+
+	if cfg.DisableSystemPool {
+		caPool = x509.NewCertPool()
+	} else {
+		caPool, err = certpool.GetSystemCertPool()
+		if err != nil {
+			return
+		}
+	}
 
 	for _, ca := range cfg.RootCAs {
 		caPool.AppendCertsFromPEM(ca)
@@ -87,7 +187,7 @@ func GenServerTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
 
 	// nolint: gosec
 	tlsConfig = &tls.Config{
-		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientAuth:   ClientAuthTypeMap(cfg.ClientAuth),
 		Certificates: []tls.Certificate{cert},
 		ClientCAs:    caPool,
 	}
@@ -95,7 +195,7 @@ func GenServerTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
 	return
 }
 
-func GenClientTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
+func GenClientTLSConfig(cfg *GRPCClientTLSConfig) (tlsConfig *tls.Config, err error) {
 	if cfg == nil {
 		err = commerr.ErrInvalidArgument
 
@@ -104,23 +204,34 @@ func GenClientTLSConfig(cfg *GRPCTlsConfig) (tlsConfig *tls.Config, err error) {
 
 	var caPool *x509.CertPool
 
-	if len(cfg.RootCAs) > 0 {
+	if cfg.DisableSystemPool {
 		caPool = x509.NewCertPool()
+	} else {
+		caPool, err = certpool.GetSystemCertPool()
+		if err != nil {
+			return
+		}
+	}
 
+	if len(cfg.RootCAs) > 0 {
 		for _, ca := range cfg.RootCAs {
 			caPool.AppendCertsFromPEM(ca)
 		}
 	}
 
-	cert, err := tls.X509KeyPair(cfg.Cert, cfg.Key)
-	if err != nil {
-		return
+	var clientCertificate tls.Certificate
+
+	if len(cfg.Cert) > 0 && len(cfg.Key) > 0 {
+		clientCertificate, err = tls.X509KeyPair(cfg.Cert, cfg.Key)
+		if err != nil {
+			return
+		}
 	}
 
 	// nolint: gosec
 	tlsConfig = &tls.Config{
 		ServerName:         cfg.ServerName,
-		Certificates:       []tls.Certificate{cert},
+		Certificates:       []tls.Certificate{clientCertificate},
 		RootCAs:            caPool,
 		InsecureSkipVerify: cfg.InsecureSkipVerify,
 	}

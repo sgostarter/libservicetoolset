@@ -16,7 +16,7 @@ func ServerVerifyInterceptor(secureOption *certutils.SecureOption) grpc.UnarySer
 	return func(
 		ctx context.Context,
 		req interface{},
-		info *grpc.UnaryServerInfo,
+		_ *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (resp interface{}, err error) {
 		if secureOption != nil && secureOption.ServerWithTLS {
@@ -31,7 +31,7 @@ func ServerVerifyInterceptor(secureOption *certutils.SecureOption) grpc.UnarySer
 }
 
 func ServerStreamVerifyInterceptor(secureOption *certutils.SecureOption) grpc.StreamServerInterceptor {
-	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return func(srv interface{}, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if secureOption != nil && secureOption.ServerWithTLS {
 			err := VerifyClientCert(ss.Context(), secureOption)
 			if err != nil {

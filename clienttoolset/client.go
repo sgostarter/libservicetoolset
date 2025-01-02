@@ -27,9 +27,9 @@ const (
 )
 
 type GRPCClientConfig struct {
-	Target        string                        `yaml:"target" json:"target"`
-	TLSConfig     *servicetoolset.GRPCTlsConfig `yaml:"tls_config" json:"tls_config"`
-	MetaTransKeys []string                      `json:"-" yaml:"-" ignored:"true"`
+	Target        string                              `yaml:"target" json:"target"`
+	TLSConfig     *servicetoolset.GRPCClientTLSConfig `yaml:"tls_config" json:"tls_config"`
+	MetaTransKeys []string                            `json:"-" yaml:"-" ignored:"true"`
 
 	KeepAliveTime    time.Duration `json:"keep_alive_time" yaml:"keep_alive_time"`
 	KeepAliveTimeout time.Duration `json:"keep_alive_timeout" yaml:"keep_alive_timeout"`
@@ -56,7 +56,7 @@ func DialGRPC(cfg *GRPCClientConfig, opts []grpc.DialOption) (*grpc.ClientConn, 
 	return DialGRPCEx(context.Background(), cfg, opts)
 }
 
-func DialGRPCEx(ctx context.Context, cfg *GRPCClientConfig, opts []grpc.DialOption) (*grpc.ClientConn, error) {
+func DialGRPCEx(_ context.Context, cfg *GRPCClientConfig, opts []grpc.DialOption) (*grpc.ClientConn, error) {
 	dialOptions := make([]grpc.DialOption, 0, len(opts)+1)
 
 	unaryInterceptors := []grpc.UnaryClientInterceptor{
@@ -71,7 +71,7 @@ func DialGRPCEx(ctx context.Context, cfg *GRPCClientConfig, opts []grpc.DialOpti
 
 	dialOptions = append(dialOptions, opts...)
 
-	if cfg.TLSConfig != nil && len(cfg.TLSConfig.Key) > 0 {
+	if cfg.TLSConfig != nil {
 		tlsConfig, err := servicetoolset.GenClientTLSConfig(cfg.TLSConfig)
 		if err != nil {
 			return nil, err
@@ -94,7 +94,7 @@ func DialGRPCEx(ctx context.Context, cfg *GRPCClientConfig, opts []grpc.DialOpti
 		}))
 	}
 
-	return grpc.DialContext(ctx, cfg.Target, dialOptions...)
+	return grpc.NewClient(cfg.Target, dialOptions...)
 }
 
 func RegisterSchemas(_ context.Context, cfg *RegisterSchemasConfig, logger l.Wrapper) error {

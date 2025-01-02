@@ -9,14 +9,14 @@ import (
 )
 
 func ServerIDInterceptor(transKeys []string) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (
+	return func(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (
 		resp interface{}, err error) {
 		return handler(meta.TransferContextMeta(ctx, transKeys), req)
 	}
 }
 
 func ServerStreamIDInterceptor(transKeys []string) grpc.StreamServerInterceptor {
-	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return func(srv interface{}, ss grpc.ServerStream, _ *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		wrapper := utils.NewServerStreamWrapper(meta.TransferContextMeta(ss.Context(), transKeys), ss)
 
 		return handler(srv, wrapper)
