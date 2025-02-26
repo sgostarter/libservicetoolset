@@ -8,11 +8,12 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/sgostarter/i v0.1.16
-	github.com/sgostarter/libeasygo v0.1.84
+	github.com/sgostarter/libeasygo v0.1.88
 	github.com/sgostarter/librediscovery v0.0.12
 	github.com/sgostarter/libstg v0.0.1
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/atomic v1.11.0
+	golang.org/x/net v0.32.0
 	google.golang.org/grpc v1.69.2
 	google.golang.org/grpc/examples v0.0.0-20241224124116-724f450f77a0
 	gorm.io/gorm v1.25.2-0.20230530020048-26663ab9bf55
@@ -41,7 +42,6 @@ require (
 	github.com/sgostarter/libconfig v0.0.2 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241202173237-19429a94021a // indirect
