@@ -12,6 +12,7 @@ import (
 	"github.com/sgostarter/libeasygo/cuserror"
 	"github.com/sgostarter/libeasygo/iputils"
 	"github.com/sgostarter/libservicetoolset/certpool"
+	"golang.org/x/net/http2"
 )
 
 type ClientAuthType int
@@ -190,6 +191,7 @@ func GenServerTLSConfig(cfg *GRPCServerTLSConfig) (tlsConfig *tls.Config, err er
 		ClientAuth:   ClientAuthTypeMap(cfg.ClientAuth),
 		Certificates: []tls.Certificate{cert},
 		ClientCAs:    caPool,
+		NextProtos:   []string{http2.NextProtoTLS, "h2"},
 	}
 
 	return
@@ -234,6 +236,7 @@ func GenClientTLSConfig(cfg *GRPCClientTLSConfig) (tlsConfig *tls.Config, err er
 		Certificates:       []tls.Certificate{clientCertificate},
 		RootCAs:            caPool,
 		InsecureSkipVerify: cfg.InsecureSkipVerify,
+		NextProtos:         []string{http2.NextProtoTLS, "h2"},
 	}
 
 	return
